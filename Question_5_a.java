@@ -3,7 +3,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-public class AntColonyAlgorithm {
+public class Question_5_a {
 
     private static final int NUM_ANTS = 10;
     private static final double ALPHA = 1.0; // Pheromone importance
@@ -15,7 +15,7 @@ public class AntColonyAlgorithm {
     private double[][] distances;
     private double[][] pheromones;
 
-    public AntColonyAlgorithm(double[][] distances) {
+    public Question_5_a(double[][] distances) {
         this.numCities = distances.length;
         this.distances = distances;
         this.pheromones = new double[numCities][numCities];
@@ -143,7 +143,7 @@ public class AntColonyAlgorithm {
                 {15, 35, 0, 30},
                 {20, 25, 30, 0}
         };
-        AntColonyAlgorithm aco = new AntColonyAlgorithm(distances);
+        Question_5_a aco = new Question_5_a(distances);
         int[] bestTour = aco.solve(1000);
         System.out.println("Best tour length: " + aco.calculateTourLength(bestTour));
         System.out.println("Best tour: " + Arrays.toString(bestTour));

@@ -1,5 +1,5 @@
 
-public class MinimumCost {
+public class Question_1_a {
 
     public static int minCost(int[][] costs) {
         if (costs == null || costs.length == 0 || costs[0].length == 0) {
