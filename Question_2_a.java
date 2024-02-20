@@ -1,38 +1,39 @@
-public class Question_2_a {
-    public int minMoves(int[] machines) {
-        // Calculate the total number of dresses in all machines
+public class Question_2_a{
+
+    // Method to calculate the minimum moves required to equalize the number of dresses in each machine
+    public static int calculateMinimumMoves(int[] machines) {
         int totalDresses = 0;
+        int totalMachines = machines.length;
+
+        // Calculate the total number of dresses across all machines
         for (int dresses : machines) {
             totalDresses += dresses;
         }
 
-        int n = machines.length;
-        // Check if the total number of dresses is divisible by the number of machines
-        if (totalDresses % n != 0) {
-            return -1; // If not divisible, it's impossible to equalize
+        // If the total number of dresses cannot be evenly distributed, return -1
+        if (totalDresses % totalMachines != 0) {
+            return -1;
         }
 
-        int target = totalDresses / n; // Target number of dresses in each machine
+        // Calculate the target number of dresses per machine
+        int targetDresses = totalDresses / totalMachines;
         int moves = 0;
-        int balance = 0;
+        int cumulativeSum = 0;
 
-        // Iterate through each machine to balance the dresses
+        // Iterate through the machines to calculate the moves needed to equalize dresses
         for (int dresses : machines) {
-            // Calculate the imbalance of dresses in the current machine
-            balance += dresses - target;
-            // Update the moves required to balance the dresses
-            // Max of current imbalance and the absolute difference between current imbalance and dresses required
-            moves = Math.max(moves, Math.max(balance, Math.abs(balance)));
+            // Update the cumulative sum of dresses
+            cumulativeSum += dresses - targetDresses;
+            // Calculate the maximum moves needed based on the current cumulative sum and individual machine dresses
+            moves = Math.max(moves, Math.max(Math.abs(cumulativeSum), dresses - targetDresses));
         }
 
         return moves;
     }
 
     public static void main(String[] args) {
-        Question_2_a machine = new Question_2_a();
-
-        // Example usage
         int[] machines = {1, 0, 5};
-        System.out.println(machine.minMoves(machines)); // Output: 2
+        int minMoves = calculateMinimumMoves(machines);
+        System.out.println("Minimum moves required: " + minMoves); // Output should be 2
     }
 }

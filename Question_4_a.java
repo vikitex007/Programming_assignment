@@ -1,77 +1,77 @@
-import java.util.*;
+import java.util.LinkedList;
+import java.util.Queue;
 
-class Solution {
-    public int shortestPathAllKeys(String[] grid) {
-        int m = grid.length;
-        int n = grid[0].length();
+public class Question_4_a {
+    // Function to find the minimum number of moves to collect all keys
+    public static int findMinimumMovesToCollectAllKeys(String[] maze) {
+        int rows = maze.length;
+        int cols = maze[0].length();
         int targetKeys = 0;
-        int[] dir = {-1, 0, 1, 0, -1}; // Direction array for moving up, right, down, left
-        Set<String> visited = new HashSet<>();
-        Queue<int[]> queue = new LinkedList<>();
-        int steps = 0;
+        int startX = 0, startY = 0;
 
-        // Find the starting point 'S' and calculate the target keys
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                if (grid[i].charAt(j) == 'S') {
-                    queue.offer(new int[]{i, j, 0});
-                    visited.add(i + "-" + j + "-0");
-                } else if (Character.isLowerCase(grid[i].charAt(j))) {
-                    targetKeys |= 1 << (grid[i].charAt(j) - 'a');
+        // Find the starting point and target keys
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                char cell = maze[i].charAt(j);
+                if (cell == 'S') {
+                    startX = i;
+                    startY = j;
+                } else if (cell == 'E') {
+                    targetKeys |= (1 << ('f' - 'a'));
+                } else if (cell >= 'a' && cell <= 'f') {
+                    targetKeys |= (1 << (cell - 'a'));
                 }
             }
         }
 
-        // Perform BFS to find the shortest path to collect all keys
-        while (!queue.isEmpty()) {
-            int size = queue.size();
-            for (int i = 0; i < size; i++) {
-                int[] cur = queue.poll();
-                int x = cur[0];
-                int y = cur[1];
-                int keys = cur[2];
-                
-                // If all target keys are collected, return the number of steps
-                if (keys == targetKeys) return steps;
+        Queue<int[]> queue = new LinkedList<>();
+        boolean[][][] visited = new boolean[rows][cols][1 << 6];
+        queue.offer(new int[] { startX, startY, 0, 0 });
 
-                // Explore neighboring cells
-                for (int k = 0; k < 4; k++) {
-                    int nx = x + dir[k];
-                    int ny = y + dir[k + 1];
-                    int newKeys = keys;
-                    // Check if the neighbor is within bounds and not a wall
-                    if (nx >= 0 && nx < m && ny >= 0 && ny < n && grid[nx].charAt(ny) != '#') {
-                        char c = grid[nx].charAt(ny);
-                        // If the neighbor is an uppercase letter and the corresponding key is not collected, skip
-                        if (Character.isUpperCase(c) && ((keys >> (c - 'A')) & 1) == 0) continue;
-                        // If the neighbor is a lowercase letter, collect the key and update target keys
-                        if (Character.isLowerCase(c)) {
-                            newKeys |= 1 << (c - 'a');
+        int[][] directions = { { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 } };
+
+        // Perform BFS to explore the maze
+        while (!queue.isEmpty()) {
+            int[] current = queue.poll();
+            int x = current[0];
+            int y = current[1];
+            int keys = current[2];
+            int steps = current[3];
+            
+            // If all keys are collected, return the number of steps
+            if (keys == targetKeys) {
+                return steps;
+            }
+            
+            // Explore neighboring cells
+            for (int[] dir : directions) {
+                int newX = x + dir[0];
+                int newY = y + dir[1];
+                if (newX >= 0 && newX < rows && newY >= 0 && newY < cols && maze[newX].charAt(newY) != 'W') {
+                    char cell = maze[newX].charAt(newY);
+                    if (cell == 'E' || cell == 'P' || (cell >= 'a' && cell <= 'f')
+                            || (cell >= 'A' && cell <= 'F' && (keys & (1 << (cell - 'A'))) != 0)) {
+                        int newKeys = keys;
+                        if (cell >= 'a' && cell <= 'f') {
+                            newKeys |= (1 << (cell - 'a'));
                         }
-                        // Add the new state to the queue if not visited before
-                        if (!visited.contains(nx + "-" + ny + "-" + newKeys)) {
-                            visited.add(nx + "-" + ny + "-" + newKeys);
-                            queue.offer(new int[]{nx, ny, newKeys});
+
+                        if (!visited[newX][newY][newKeys]) {
+                            visited[newX][newY][newKeys] = true;
+                            queue.offer(new int[] { newX, newY, newKeys, steps + 1 });
                         }
                     }
                 }
             }
-            // Increment the number of steps
-            steps++;
         }
-        // If it's not possible to collect all keys, return -1
-        return -1;
-    }
-}
 
-public class Question_4_a {
+        return -1; // If all keys cannot be collected
+    }
+
+    // Main method for testing
     public static void main(String[] args) {
-        Solution solution = new Solution();
-        String[] grid = {
-            "SPqPP",
-            "WWWPW",
-            "rPQPR"
-        };
-        System.out.println(solution.shortestPathAllKeys(grid)); // Output: 8
+        String[] maze = { "SPaPP", "WWWPW", "bPAPB" };
+        int result = findMinimumMovesToCollectAllKeys(maze);
+        System.out.println("Minimum number of moves: " + result);
     }
 }

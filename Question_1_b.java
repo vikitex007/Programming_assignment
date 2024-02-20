@@ -1,42 +1,26 @@
-import java.util.PriorityQueue;
-
 public class Question_1_b {
-
-    public int minBuildTime(int[] engines, int splitCost) {
-        PriorityQueue<Integer> pq = new PriorityQueue<>((a, b) -> b - a); // Max heap
-
-        for (int engine : engines) {
-            pq.offer(engine);
-        }
-
-        int time = 0;
-
-        while (pq.size() > 1) {
-            int maxTime = pq.poll(); // Take the engineer with the maximum time to build an engine
-            int secondMaxTime = pq.isEmpty() ? 0 : pq.peek(); // Get the time of the second engineer
-
-            // Split the engineer and add the split cost
-            time += splitCost;
-
-            // Add the two new engineers after splitting
-            pq.offer(maxTime / 2);
-            pq.offer((maxTime + 1) / 2); // Handles odd times correctly
-
-            // Adjust the second engineer's time if necessary
-            if (secondMaxTime > maxTime / 2) {
-                pq.remove(secondMaxTime);
-                pq.offer(secondMaxTime / 2);
-                pq.offer((secondMaxTime + 1) / 2); // Handles odd times correctly
+    // Method to calculate the minimum time required to construct engines
+    public static int findMinimumConstructionTime(int[] engineConstructionTimes, int splitCost) {
+        int totalDuration = 0;
+        // Iterate through each engine construction time
+        for (int constructionTime : engineConstructionTimes) {
+            // Check if splitting the construction time reduces the total duration
+            if (splitCost + constructionTime / 2 < constructionTime) {
+                // If splitting reduces time, add split cost to total duration
+                totalDuration += splitCost;
+            } else {
+                // Otherwise, add full construction time to total duration
+                totalDuration += constructionTime;
             }
         }
-
-        return time + pq.poll(); // Add the remaining time of the last engineer
+        return totalDuration;
     }
 
     public static void main(String[] args) {
-        Question_1_b builder = new Question_1_b();
-        int[] engines = {1, 2, 3};
-        int splitCost = 1;
-        System.out.println(builder.minBuildTime(engines, splitCost)); // Output: 4
+        int[] engineConstructionTimes = {1, 2, 3}; // Array representing construction times of engines
+        int splitCost = 1; // Cost to split construction time
+
+        // Calculate and print the minimum time to construct engines
+        System.out.println("Minimum time to construct engines: " + findMinimumConstructionTime(engineConstructionTimes, splitCost));
     }
 }
